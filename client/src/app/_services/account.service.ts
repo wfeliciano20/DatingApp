@@ -7,7 +7,7 @@ import { User } from '../_models/User';
   providedIn: 'root',
 })
 export class AccountService {
-  baseUrl = 'http://localhost:5000/api/';
+  baseUrl = 'https://localhost:5001/api/';
   private currentUserSource = new BehaviorSubject<User | null>(null);
   // with the use of $ we denote that this is an observable
   // When we call the next method on currentUserSource this observable will be fired

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using API.Data;
+using API.Helpers;
 using API.interfaces;
 using API.services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -28,6 +29,9 @@ namespace API.Extensions
             services.AddScoped<IUserRepository, UserRepository>();
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            services.Configure<CloudinarySettings>(configuration.GetSection("CloudinarySettings"));
+            services.AddScoped<IPhotoServices, PhotoService>();
 
             return services;
         }

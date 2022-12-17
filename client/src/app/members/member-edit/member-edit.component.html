@@ -1,4 +1,4 @@
-<div class="row" *ngIf="member">
+<div class="row mb-3" *ngIf="member">
     <div class="col-4">
         <h1>Your Profile</h1>
     </div>
@@ -59,7 +59,7 @@
                 </form>
             </tab>
             <tab heading="Edit Photos">
-                <p>Editing will go here</p>
+                <app-photo-editor [member]="member"></app-photo-editor>
             </tab>
         </tabset>
     </div>

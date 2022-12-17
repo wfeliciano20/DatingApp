@@ -40,14 +40,15 @@ namespace API.Controllers
             return new UserDTO
             {
                 Username = user.UserName,
-                Token = _tokenService.CreateToken(user)
+                Token = _tokenService.CreateToken(user),
+                PhotoUrl = user.Photos.FirstOrDefault(x=>x.IsMain)?.Url
             };
         }
 
         [HttpPost("login")]
         public async Task<ActionResult<UserDTO>> Login(LoginDTO loginDTO)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == loginDTO.Username);
+            var user = await _context.Users.Include(p=>p.Photos).FirstOrDefaultAsync(u => u.UserName == loginDTO.Username);
             if(user == null) return Unauthorized();
 
             using var hmac = new HMACSHA512(user.PasswordSalt);
@@ -62,7 +63,8 @@ namespace API.Controllers
             return new UserDTO
             {
                 Username = user.UserName,
-                Token = _tokenService.CreateToken(user)
+                Token = _tokenService.CreateToken(user),
+                PhotoUrl = user.Photos.FirstOrDefault(x=>x.IsMain)?.Url
             };
         }
 

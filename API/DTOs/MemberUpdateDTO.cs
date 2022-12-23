@@ -14,6 +14,6 @@ namespace API.DTOs
 
         public string Country { get; set; }
 
-        public string Gende { get; set; }
+        public string Gender { get; set; }
     }
 }

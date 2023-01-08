@@ -4,15 +4,13 @@ using API.Data;
 using API.DTOs;
 using API.Entities;
 using API.interfaces;
-using API.services;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace API.Controllers
 {
-    public class AccountController : BaseApiController
+  public class AccountController : BaseApiController
     {
         private readonly DataContext _context;
 
@@ -40,9 +38,9 @@ namespace API.Controllers
 
             user.UserName = registerDTO.Username.ToLower();
 
-            user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDTO.Password));
+            //user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDTO.Password));
 
-            user.PasswordSalt = hmac.Key;
+            //user.PasswordSalt = hmac.Key;
 
             _context.Users.Add(user);
 
@@ -64,14 +62,14 @@ namespace API.Controllers
             var user = await _context.Users.Include(p=>p.Photos).FirstOrDefaultAsync(u => u.UserName == loginDTO.Username);
             if(user == null) return Unauthorized();
 
-            using var hmac = new HMACSHA512(user.PasswordSalt);
+            //using var hmac = new HMACSHA512(user.PasswordSalt);
 
-            var computeHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDTO.Password));
+            //var computeHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDTO.Password));
 
-            for(int i=0;i<computeHash.Length;i++ )
-            {
-                if(computeHash[i] != user.PasswordHash[i]) return Unauthorized("Invalid Password");
-            }
+            // for(int i=0;i<computeHash.Length;i++ )
+            // {
+            //     if(computeHash[i] != user.PasswordHash[i]) return Unauthorized("Invalid Password");
+            // }
 
             return new UserDTO
             {

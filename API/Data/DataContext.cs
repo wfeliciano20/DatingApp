@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using API.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -15,7 +11,6 @@ namespace API.Data
     {
         public DataContext(DbContextOptions<DataContext> options): base(options){}
 
-        //public DbSet<AppUser> Users { get; set; }
 
         public DbSet<UserLike> Likes { get; set; }
 

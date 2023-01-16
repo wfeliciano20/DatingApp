@@ -5,6 +5,7 @@ using API.DTOs;
 using API.Entities;
 using API.interfaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,17 +13,14 @@ namespace API.Controllers
 {
   public class AccountController : BaseApiController
     {
-        private readonly DataContext _context;
-
         private readonly ITokenService _tokenService;
-
-
         private readonly IMapper _mapper;
+        private readonly UserManager<AppUser> _userManager;
 
-        public AccountController(DataContext context, ITokenService tokenService, IMapper mapper)
+        public AccountController(UserManager<AppUser> userManager, ITokenService tokenService, IMapper mapper)
         {
+            _userManager = userManager;
             _mapper = mapper;
-            _context = context;
             _tokenService = tokenService;
 
         }
@@ -34,7 +32,7 @@ namespace API.Controllers
 
             var user = _mapper.Map<AppUser>(registerDTO);
 
-            using var hmac = new HMACSHA512();
+            //using var hmac = new HMACSHA512();
 
             user.UserName = registerDTO.Username.ToLower();
 
@@ -42,9 +40,9 @@ namespace API.Controllers
 
             //user.PasswordSalt = hmac.Key;
 
-            _context.Users.Add(user);
+            var result = await _userManager.CreateAsync(user, registerDTO.Password);
 
-            await _context.SaveChangesAsync();
+            if(!result.Succeeded) return BadRequest(result.Errors);
 
             return new UserDTO
             {
@@ -59,8 +57,12 @@ namespace API.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<UserDTO>> Login(LoginDTO loginDTO)
         {
-            var user = await _context.Users.Include(p=>p.Photos).FirstOrDefaultAsync(u => u.UserName == loginDTO.Username);
-            if(user == null) return Unauthorized();
+            var user = await _userManager.Users.Include(p=>p.Photos).FirstOrDefaultAsync(u => u.UserName == loginDTO.Username);
+            if(user == null) return Unauthorized("Invalid username");
+
+            var result = await _userManager.CheckPasswordAsync(user,loginDTO.Password);
+
+            if(!result) return Unauthorized();
 
             //using var hmac = new HMACSHA512(user.PasswordSalt);
 
@@ -83,7 +85,7 @@ namespace API.Controllers
 
         private async Task<bool> UserExist(string username)
         {
-            return await _context.Users.AnyAsync(user => user.UserName == username.ToLower());
+            return await _userManager.Users.AnyAsync(user => user.UserName == username.ToLower());
         }
     }
 }
